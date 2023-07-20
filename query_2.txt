@@ -19,8 +19,7 @@ ORDER BY `n_insegnanti` DESC;
 3. Calcolare la media dei voti di ogni appello d'esame
 
 SELECT `exams`.`id` AS 'appello', AVG(`exam_student`.`vote`) as 'voto_medio'
-FROM `exams`
-JOIN `exam_student` ON `exams`.`id`= `exam_student`.`exam_id`
+FROM `exams_studnet`
 GROUP BY `exams`.`id`;
 
 
@@ -39,9 +38,9 @@ ________________________________________________________________________________
 
 QUERY JOIN
 
-1. Selezionare tutti gli studenti iscritti al Corso di Laurea in Economia
+1. Selezionare tutti gli studenti iscritti al Corso di Laurea in Economia (da correggere)
 
-SELECT `degrees`.`name` as 'corso_di_laurea', COUNT(`students`.`id`) AS 'studenti'
+SELECT `degrees`.`name` as 'corso_di_laurea', `students`.`id` AS 'studenti'
 FROM `degrees`
 JOIN `students` ON `degrees`.`id` = `students`.`degree_id`
 WHERE `degrees`.`name` LIKE 'Corso di Laurea in Economia';
@@ -102,20 +101,14 @@ WHERE `departments`.`name` LIKE 'Dipartimento di Matematica';
 per ogni esame, stampando anche il voto massimo. Successivamente,
 filtrare i tentativi con voto minimo 18
 
-SELECT `students`.`surname` as 'cognome_studente',`students`.`name` as 'nome_studente',  COUNT(`exam_student`.`exam_id`) as 'tentativi_sostenuti',  MAX(`exam_student`.`vote`) as 'voto_massimo', `exam_student`.`vote` AS 'tentetivi_passati'
-FROM `students`
-JOIN `exam_student` ON `exam_student`.`student_id` = `students`.`id`
-WHERE `exam_student`.`vote` >=18
-GROUP BY  `students`.`surname`;
-
 
 OPPURE TENTATIVI ESAMI FILTRATI PER SINGOLO ESAME (da controllare)
 
-SELECT `students`.`surname` as 'cognome_studente',`students`.`name` as 'nome_studente',  COUNT(`exam_student`.`exam_id`) as 'tentativi_sostenuti',  MAX(`exam_student`.`vote`) as 'voto_massimo', `exam_student`.`vote` AS 'tentetivi_passati', `courses`.`name` AS 'nome_esame'
+SELECT `students`.`surname` as 'cognome_studente',`students`.`name` as 'nome_studente',  COUNT(`exam_student`.`vote`) as 'tentativi_sostenuti',  MAX(`exam_student`.`vote`) as 'voto_massimo',  `courses`.`name` AS 'nome_esame'
 FROM `students`
 JOIN `exam_student` ON `exam_student`.`student_id` = `students`.`id`
 JOIN `exams` ON `exams`.`id` = `exam_student`.`exam_id`
 JOIN `courses` ON `exams`.`course_id` = `courses`.id
-WHERE `exam_student`.`vote` >=18
-GROUP BY  `courses`.`name`
+GROUP BY  `courses`.`name`, `students`.`id`
+WHERE MAX(`exam_student`.`vote`) >=18
 ORDER BY `students`.`surname`, `students`.`name`;
